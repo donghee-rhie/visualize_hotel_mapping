@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Matching Model Visualization</title>
+    
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="columns is-gapless" style="height: 100vh;">
+            <!-- 좌측 버튼 패널 -->
+            <div class="column is-narrow sidebar">
+                <div class="box has-background-primary-light" style="height: 100vh; border-radius: 0;">
+                    <h1 class="title is-4 has-text-primary-dark has-text-centered">
+                        <i class="fas fa-hotel"></i>
+                        Hotel Matching
+                    </h1>
+                    <hr class="has-background-primary">
+                    
+                    <!-- Property 정보 -->
+                    <div class="card mb-4 pastel-card">
+                        <div class="card-header has-background-info-light">
+                            <p class="card-header-title is-size-6 has-text-info-dark">
+                                <i class="fas fa-search mr-2"></i>
+                                검색 대상 Property
+                            </p>
+                        </div>
+                        <div class="card-content" id="property-info">
+                            <div class="content is-size-7">
+                                <p class="has-text-grey">로딩 중...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 버튼들 -->
+                    <div class="buttons is-fullwidth" style="flex-direction: column;">
+                        <button class="button is-large is-primary is-fullwidth step-button pastel-button" 
+                                id="step1-btn" 
+                                data-step="1">
+                            <span class="icon">
+                                <i class="fas fa-filter"></i>
+                            </span>
+                            <span>Step 1: 후보군 선정</span>
+                        </button>
+                        
+                        <button class="button is-large is-info is-fullwidth step-button pastel-button" 
+                                id="step2-btn" 
+                                data-step="2" 
+                                disabled>
+                            <span class="icon">
+                                <i class="fas fa-sort-amount-down"></i>
+                            </span>
+                            <span>Step 2: 스코어링</span>
+                        </button>
+                        
+                        <button class="button is-large is-fullwidth step-button pastel-button" 
+                                id="step3-btn" 
+                                data-step="3" 
+                                disabled>
+                            <span class="icon">
+                                <i class="fas fa-clipboard-check"></i>
+                            </span>
+                            <span>Step 3: LLM 검증대상 선정</span>
+                        </button>
+
+                        <button class="button is-large is-fullwidth step-button pastel-button" 
+                                id="step4-btn" 
+                                data-step="4" 
+                                disabled>
+                            <span class="icon">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            <span>Step 4: 최종 선별</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 진행 상태 -->
+                    <div class="card mt-4 pastel-card">
+                        <div class="card-header has-background-warning-light">
+                            <p class="card-header-title is-size-6 has-text-warning-dark">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                진행 상태
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <div id="progress-info" class="content is-size-7">
+                                <p>Step을 시작하세요.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 리셋 버튼 -->
+                    <button class="button is-danger is-fullwidth mt-4 pastel-button" id="reset-btn">
+                        <span class="icon">
+                            <i class="fas fa-redo"></i>
+                        </span>
+                        <span>리셋</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 우측 메인 뷰 -->
+            <div class="column main-content">
+                <div class="box" style="height: 100vh; margin: 0; border-radius: 0; background: #faf9f7;">
+                    <!-- 헤더 -->
+                    <div class="level mb-4">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <h2 class="title is-3 has-text-grey-darker">
+                                    <span id="main-title">Hotel Matching Model Visualization</span>
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <span class="tag is-info is-large pastel-tag" id="status-tag">대기 중</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 메시지 영역 -->
+                    <div id="message-area" class="notification is-hidden pastel-notification">
+                        <button class="delete"></button>
+                        <span id="message-text"></span>
+                    </div>
+                    
+                    <!-- 호텔 박스 컨테이너 -->
+                    <div id="hotel-container" class="hotel-grid">
+                        <div class="has-text-centered" style="padding-top: 15vh; grid-column: 1 / -1;">
+                            <div class="content">
+                                <h3 class="title is-4 has-text-grey-light">
+                                    <i class="fas fa-hotel fa-3x mb-3"></i>
+                                </h3>
+                                <h4 class="subtitle is-5 has-text-grey">
+                                    Step 1 버튼을 클릭하여 호텔 매칭을 시작하세요
+                                </h4>
+                                <p class="has-text-grey">
+                                    500개의 카탈로그 호텔 중에서 최적의 매칭을 찾는 과정을 확인할 수 있습니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 로딩 모달 -->
+    <div class="modal" id="loading-modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box has-text-centered pastel-card">
+                <div class="is-size-3 mb-3 has-text-primary">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p class="title is-5 has-text-primary-dark">처리 중...</p>
+                <p class="subtitle is-6 has-text-grey" id="loading-message">데이터를 분석하고 있습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
